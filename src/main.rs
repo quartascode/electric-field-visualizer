@@ -2,7 +2,7 @@ use macroquad::{prelude::*};
 
 const WIDTH:  i32 = 1280;
 const HEIGHT: i32 = 720;
-const SCALE: f32 = 20.0;
+const SCALE: f32 = 05.0;
 
 const KE: f32 = 9_000_000_000.0;
 
@@ -37,13 +37,15 @@ impl Particle {
 
 #[macroquad::main(window_conf())]
 async fn main() {
-    let p1 = Particle::new(Vec2 { x: -10.0, y:  10.0 }, Vec2 { x: 0.0, y: 0.0 }, 1.0, 0.001);
-    let p2 = Particle::new(Vec2 { x:  10.0, y: -10.0 }, Vec2 { x: 0.0, y: 0.0 }, 1.0, 0.001);
+    let p1 = Particle::new(Vec2 { x: -10.0, y:  10.0 }, Vec2 { x: 0.0, y:  0.1 }, 1.0, -0.0001);
+    let p2 = Particle::new(Vec2 { x:  10.0, y: -10.0 }, Vec2 { x: 0.0, y: -0.1 }, 1.0, 0.0001);
+    let p3 = Particle::new(Vec2 { x:  00.0, y:  00.0 }, Vec2 { x: 0.0, y:  0.0 }, 1.0, -0.00005);
 
     let mut particles = Vec::new();
 
     particles.push(p1);
     particles.push(p2);
+    particles.push(p3);
 
     loop {
         if is_key_pressed(KeyCode::Escape) || is_quit_requested() {
@@ -53,12 +55,17 @@ async fn main() {
         update(&mut particles, get_frame_time());
 
         draw(&particles);
+        //draw_fps();
 
         next_frame().await
     }
 }
 
 fn update(particles: &mut [Particle], dt: f32) {
+    for p in particles.iter_mut() {
+        p.accel = Vec2 { x: 0.0, y: 0.0 };
+    }
+
     for i in 0..particles.len() {
         for j in i+1..particles.len() {
             let (first, last) = particles.split_at_mut(j);
@@ -71,13 +78,8 @@ fn update(particles: &mut [Particle], dt: f32) {
             let dir = p2.pos - p1.pos;
             let force = force * dir;
 
-            let is_neg1 = p1.charge.is_sign_negative();
-            let is_neg2 = p2.charge.is_sign_negative();
-
-            if is_neg1 || !is_neg2 {
-                p1.accel += force * p1.inv_mass;
-                p2.accel -= force * p2.inv_mass;
-            }
+            p1.accel -= force * p1.inv_mass;
+            p2.accel += force * p2.inv_mass;
         }
     }
 
@@ -99,9 +101,10 @@ fn update(particles: &mut [Particle], dt: f32) {
 
 
 fn integrate(p: &mut Particle, dt: f32) {
+    let a = p.pos;
+
     p.pos = 2.0*p.pos - p.prev_pos + p.accel*dt*dt;
-    p.prev_pos = p.pos;
-    //p.accel = Vec2 { x: 0.0, y: 0.0 };
+    p.prev_pos = a;
 }
 
 fn electric_force(p1: &Particle, p2: &Particle) -> f32 {
@@ -110,7 +113,7 @@ fn electric_force(p1: &Particle, p2: &Particle) -> f32 {
     let d = p1.pos.distance(p2.pos);
     dbg!(d);
 
-    if d < 20.1 {
+    if d < 0.1 {
         0.0
     } else {
         a / (d * d)
@@ -136,6 +139,13 @@ fn draw(parts: &[Particle]) {
     for p in parts {
         let screen_pos = project_to_screen(p.pos, SCALE);
 
+        let force = p.accel * p.mass * 0.25;
+        let force = p.pos + force;
+
+        let force = project_to_screen(force, SCALE);
+
+        draw_line(screen_pos.x, screen_pos.y, force.x, force.y, 0.1 * SCALE, RED);
+
         draw_circle(screen_pos.x, screen_pos.y, p.radius * SCALE, BLUE);
     }
 }
@@ -153,6 +163,10 @@ fn window_conf() -> Conf {
         window_width: WIDTH,
         window_height: HEIGHT,
         window_resizable: false,
+        platform: miniquad::conf::Platform {
+            swap_interval: Some(1),
+            ..Default::default()
+        },
         ..Default::default()
     }
 }
