@@ -4,4 +4,4 @@ The name says it all
 
 ## Images
 
-![Image #1](imases/example.png)
+![Image #1](images/example.png)
