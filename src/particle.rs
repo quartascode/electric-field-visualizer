@@ -16,7 +16,6 @@ impl Particle {
     }
 
     pub fn electric_field_at(&self, point: Vec2) -> Vec2 {
-        // E = K * Q / d^2
         let dist_sqrd = self.pos.distance_squared(point);
 
         let r = (point - self.pos).normalize();

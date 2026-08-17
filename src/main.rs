@@ -9,13 +9,13 @@ async fn main() {
     let mut render_mode: bool = false;
 
     let p1 = particle::Particle::new(Vec2 { x: -10.0, y:  10.0 },  0.005);
-    let p2 = particle::Particle::new(Vec2 { x: -50.0, y: -25.0 },  0.005);
-    let p3 = particle::Particle::new(Vec2 { x:   0.0, y:  25.0 }, -0.005);
+    let p2 = particle::Particle::new(Vec2 { x: -50.0, y: -25.0 }, -0.005);
+    let p3 = particle::Particle::new(Vec2 { x:   0.0, y:  25.0 },  0.005);
 
     let mut particles = Vec::new();
 
     particles.push(p1);
-    //particles.push(p2);
+    particles.push(p2);
     particles.push(p3);
 
     let mut grid = grid::Grid::new(GRID_AMOUNT_HORIZONTAL);
