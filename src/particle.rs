@@ -1,5 +1,6 @@
 use macroquad::{prelude::*};
 use crate::KE;
+use crate::{project_to_screen, SCALE};
 
 pub struct Particle {
     pub pos: Vec2,
@@ -21,6 +22,11 @@ impl Particle {
         let r = (point - self.pos).normalize();
 
         r * KE * self.charge / dist_sqrd
+    }
+
+    pub fn draw(&self) {
+        let part_pos = project_to_screen(self.pos, SCALE);
+        draw_circle(part_pos.x, part_pos.y, 1.0 * SCALE, BLUE);
     }
 }
 
