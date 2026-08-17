@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use macroquad::{prelude::*};
 use crate::{blue_to_red_color, project_to_screen, SCALE};
 
-const AMOUNT: i32 = 360;
+const AMOUNT: i32 = 36;
 const MAX_DEPTH: i32 = 2400;
 const STEP_SIZE: f32 = 1.00;
 
@@ -31,7 +31,7 @@ pub fn draw(particles: &Vec<Particle>) {
                 }
 
                 let module = field.length().sqrt();
-                let color = blue_to_red_color(0.0, 5000.0, module);
+                let color = blue_to_red_color(1.2, 450.0, module);
 
                 field = field.normalize() * STEP_SIZE;
 

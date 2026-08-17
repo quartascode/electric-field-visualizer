@@ -1,5 +1,5 @@
 use macroquad::{prelude::*};
-use crate::{project_to_screen, reverse_projection, particle::Particle};
+use crate::{project_to_screen, reverse_projection, blue_to_red_color, particle::Particle};
 
 use crate::WIDTH;
 use crate::HEIGHT;
@@ -72,9 +72,6 @@ pub struct Cell {
 
 impl Cell {
     pub fn draw(&self) {
-        let max = 5000.0;
-        let min = 0.0;
-
         let screen_pos = project_to_screen(self.pos, SCALE);
 
         // tone it down a bit
@@ -82,29 +79,29 @@ impl Cell {
         let field = self.field;
         let module = field.length().sqrt();
 
-        let t = (module - min) / (max - min);
-        let color = Color::new(t, 0.0, 1.0-t, 1.0);
+        if module > 1.2 {
+            let color = blue_to_red_color(1.2, 450.0, module);
 
-        // make sure the lines arent REALLY big
-        let field = field.clamp_length(0.0, 2.0);
+            // make sure the lines arent REALLY big
+            let field = field.clamp_length(0.0, 2.0);
 
-        let vec_end = self.pos + field;
-        let screen_vec_end = project_to_screen(vec_end, SCALE);
+            let vec_end = self.pos + field;
+            let screen_vec_end = project_to_screen(vec_end, SCALE);
 
-        let dir = (vec_end - self.pos).normalize();
-        let perp = Vec2 { x: -dir.y, y: dir.x };
-        let l = 0.75;
-        let c = vec_end - dir * l;
-        let arrow1 = c + perp * l * 0.5;
-        let arrow2 = c - perp * l * 0.5;
-        let arrow1 = project_to_screen(arrow1, SCALE);
-        let arrow2 = project_to_screen(arrow2, SCALE);
+            let dir = (vec_end - self.pos).normalize();
+            let perp = Vec2 { x: -dir.y, y: dir.x };
+            let l = 0.75;
+            let c = vec_end - dir * l;
+            let arrow1 = c + perp * l * 0.5;
+            let arrow2 = c - perp * l * 0.5;
+            let arrow1 = project_to_screen(arrow1, SCALE);
+            let arrow2 = project_to_screen(arrow2, SCALE);
 
-        let girth = 1.5;
-        draw_line(screen_vec_end.x, screen_vec_end.y, arrow1.x, arrow1.y, girth, color);
-        draw_line(screen_vec_end.x, screen_vec_end.y, arrow2.x, arrow2.y, girth, color);
+            let girth = 1.5;
+            draw_line(screen_vec_end.x, screen_vec_end.y, arrow1.x, arrow1.y, girth, color);
+            draw_line(screen_vec_end.x, screen_vec_end.y, arrow2.x, arrow2.y, girth, color);
 
-        draw_line(screen_pos.x, screen_pos.y, screen_vec_end.x, screen_vec_end.y, girth, color);
-
+            draw_line(screen_pos.x, screen_pos.y, screen_vec_end.x, screen_vec_end.y, girth, color);
+        }
     }
 }
