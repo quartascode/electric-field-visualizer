@@ -3,22 +3,23 @@ use std::f32::consts::PI;
 use macroquad::{prelude::*};
 use crate::{blue_to_red_color, project_to_screen, SCALE};
 
+const AMOUNT: i32 = 360;
+const MAX_DEPTH: i32 = 2400;
+const STEP_SIZE: f32 = 1.00;
+
 pub fn draw(particles: &Vec<Particle>) {
     for p in particles {
         if p.charge <= 0.0 {
             continue;
         }
-        let amount = 24;
-        let max_depth = 2400;
-        let step_size = 1.00;
         let pos = p.pos;
-        for i in 0..amount {
-            let angle = i as f32 * 2.0*PI/amount as f32;
+        for i in 0..AMOUNT {
+            let angle = i as f32 * 2.0*PI/AMOUNT as f32;
             let x = pos.x + angle.cos();
             let y = pos.y + angle.sin();
 
             let mut start = Vec2 { x, y };
-            'line: for _ in 0..max_depth {
+            'line: for _ in 0..MAX_DEPTH {
                 let dst_sqrd = p.pos.distance_squared(start);
                 if dst_sqrd < 0.9 {
                     break 'line;
@@ -32,7 +33,7 @@ pub fn draw(particles: &Vec<Particle>) {
                 let module = field.length().sqrt();
                 let color = blue_to_red_color(0.0, 5000.0, module);
 
-                field = field.normalize() * step_size;
+                field = field.normalize() * STEP_SIZE;
 
                 let dir = start + field;
 

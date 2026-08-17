@@ -15,7 +15,7 @@ async fn main() {
     let mut particles = Vec::new();
 
     particles.push(p1);
-    particles.push(p2);
+    //particles.push(p2);
     particles.push(p3);
 
     let mut grid = grid::Grid::new(GRID_AMOUNT_HORIZONTAL);
