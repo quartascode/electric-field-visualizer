@@ -4,7 +4,7 @@ use macroquad::{prelude::*};
 use crate::{blue_to_red_color, project_to_screen, SCALE};
 
 const AMOUNT: i32 = 36;
-const MAX_DEPTH: i32 = 2400;
+const MAX_DEPTH: i32 = 500;
 const STEP_SIZE: f32 = 1.00;
 
 pub fn draw(particles: &Vec<Particle>) {
@@ -19,10 +19,11 @@ pub fn draw(particles: &Vec<Particle>) {
             let y = pos.y + angle.sin();
 
             let mut start = Vec2 { x, y };
-            'line: for _ in 0..MAX_DEPTH {
+
+            for _ in 0..MAX_DEPTH {
                 let dst_sqrd = p.pos.distance_squared(start);
                 if dst_sqrd < 0.9 {
-                    break 'line;
+                    break;
                 }
 
                 let mut field = Vec2::ZERO;

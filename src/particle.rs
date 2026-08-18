@@ -5,6 +5,7 @@ use crate::{project_to_screen, SCALE};
 pub struct Particle {
     pub pos: Vec2,
     pub charge: f32,
+    pub moving: bool,
 }
 
 impl Particle {
@@ -12,6 +13,7 @@ impl Particle {
         Self {
             pos: position,
             charge: charge,
+            moving: false,
         }
     }
 

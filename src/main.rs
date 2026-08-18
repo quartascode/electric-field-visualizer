@@ -20,7 +20,6 @@ async fn main() {
 
     let mut grid = grid::Grid::new(GRID_AMOUNT_HORIZONTAL);
 
-    show_mouse(false);
     loop {
         //input
         if is_key_pressed(KeyCode::Escape) || is_quit_requested() {
@@ -30,12 +29,27 @@ async fn main() {
             render_mode = !render_mode;
         }
 
-        let (x, y) = mouse_position();
-        let mouse_pos = reverse_projection(Vec2 { x, y }, SCALE);
-        particles.get_mut(0).unwrap().pos = mouse_pos;
+        if is_mouse_button_pressed(MouseButton::Left) {
+            let (x, y) = mouse_position();
+            let mouse_pos = reverse_projection(Vec2 { x, y }, SCALE);
 
-        // logic
-        //grid.calculate_cell_field(&particles);
+            for p in &mut particles {
+                let dst = p.pos.distance(mouse_pos);
+                if dst <= 1.0 {
+                    p.moving = !p.moving;
+                }
+            }
+        }
+
+        //logic
+        for p in &mut particles {
+            if p.moving {
+                let (x, y) = mouse_position();
+                let mouse_pos = reverse_projection(Vec2 { x, y }, SCALE);
+
+                p.pos = mouse_pos;
+            }
+        }
 
         // draw
         clear_background(BLACK);
@@ -53,6 +67,8 @@ async fn main() {
         for p in &particles {
             p.draw();
         }
+
+        draw_fps();
 
         next_frame().await
     }
